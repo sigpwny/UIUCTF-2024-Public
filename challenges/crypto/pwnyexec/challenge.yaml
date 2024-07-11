@@ -1,0 +1,27 @@
+name: pwnyexec
+author: Ian
+category: crypto
+description: |-
+  ???
+
+  `ncat --ssl pwnyexec.chal.uiuc.tf 1337`
+
+type: dynamic
+flag: uiuctf{???}
+
+containers:
+  main:
+    challenge:
+      build: ./challenge/
+      ports: [1337]
+    healthcheck:
+      build: ./healthcheck/
+
+expose:
+  main:
+  - target: 1337
+    tcp: pwnyexec.chal.uiuc.tf
+
+# Don't remove this
+deployed: false
+visible: false

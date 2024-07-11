@@ -1,0 +1,10 @@
+name: Feedback Survey
+author: SIGPwny Transit Authority
+category: misc
+description: |-
+  We want to make UIUCTF 2025 even better!
+  Please leave your feedback at this [form](https://forms.gle/GFQoUMmyrEZbFfEt8).
+
+type: dynamic
+value: 200
+flag: uiuctf{f33d_u5_f33db4ck}

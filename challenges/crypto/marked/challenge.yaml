@@ -1,0 +1,11 @@
+name: X Marked the Spot
+author: Anakin
+category: crypto
+description: |-
+  A perfect first challenge for beginners. Who said pirates can't ride trains...
+
+type: dynamic
+flag: uiuctf{n0t_ju5t_th3_st4rt_but_4l50_th3_3nd!!!!!}
+provide:
+  - ./public.py
+  - ./ct

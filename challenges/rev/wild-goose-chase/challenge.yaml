@@ -1,0 +1,14 @@
+name: Wild Goose Chase
+author: ronanboyarski
+category: rev
+description: |-
+  The threat group GREGARIOUS GOOSE has hacked into SIGPwny servers and stolen one of our flags! Can you use the evidence to recover the flag?
+  Now with 100% more goose.
+
+  WARNING: This challenge contains malware that may read images on your hard disk. Ensure that you do not have anything sensitive present.
+
+type: dynamic
+flag: uiuctf{GOOS3_CH4S3_ST0P_RUNN1NG_STR1NGS_0N_MY_CHAL}
+provide:
+  - ./challenge/evidence.pcapng
+  - ./challenge/Goose.dmp

@@ -1,0 +1,11 @@
+name: tooooo fancy 😏
+author: spicypete
+category: rev
+description: |-
+  I really hope this challenge TiCkLes your fancy! It is my most cursed challenge yet.
+
+type: dynamic
+flag: uiuctf{1_hope_that_tcls_y0ur_f4ncy!}
+provide:
+  - ./challenge/Dockerfile
+  - ./challenge/main.tbc

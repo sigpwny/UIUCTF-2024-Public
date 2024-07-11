@@ -1,0 +1,10 @@
+name: Time Travel
+author: "32121"
+category: rev
+description: |-
+  I used multithreading to check your flag so much slower that it almost feels like time travel.
+
+type: dynamic
+flag: uiuctf{_p4R4ll3l_c0MPut1Ng_w1tH_5dbfwmtt}
+provide:
+  - ./challenge/timetravel

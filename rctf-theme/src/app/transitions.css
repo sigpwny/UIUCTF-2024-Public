@@ -1,0 +1,155 @@
+@keyframes slide-to-s {
+  to { transform: translateY(-100%); }
+}
+@keyframes slide-to-s-from {
+  from { transform: translateY(100%); }
+}
+
+@keyframes slide-to-n {
+  to { transform: translateY(100%); }
+}
+@keyframes slide-to-n-from {
+  from { transform: translateY(-100%); }
+}
+
+@keyframes slide-to-e {
+  to { transform: translateX(-100%); }
+}
+@keyframes slide-to-e-from {
+  from { transform: translateX(100%); }
+}
+
+@keyframes slide-to-w {
+  to { transform: translateX(100%); }
+}
+@keyframes slide-to-w-from {
+  from { transform: translateX(-100%); }
+}
+
+@keyframes slide-to-nw {
+  to { transform: translate(100%, 100%); }
+}
+@keyframes slide-to-nw-from {
+  from { transform: translate(-100%, -100%); }
+}
+
+@keyframes slide-to-se {
+  to { transform: translate(-100%, -100%); }
+}
+@keyframes slide-to-se-from {
+  from { transform: translate(100%, 100%); }
+}
+
+@keyframes slide-to-sw {
+  to { transform: translate(100%, -100%); }
+}
+@keyframes slide-to-sw-from {
+  from { transform: translate(-100%, 100%); }
+}
+
+@keyframes slide-to-ne {
+  to { transform: translate(-100%, 100%); }
+}
+@keyframes slide-to-ne-from {
+  from { transform: translate(100%, -100%); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+::view-transition-old(root) {
+  animation:
+    90ms cubic-bezier(0.4, 0, 1, 1) both var(--viewtransitionfade-to),
+    0.5s cubic-bezier(.18,.88,.34,1) both var(--viewtransition-to);
+}
+
+::view-transition-new(root) {
+  animation:
+    210ms cubic-bezier(0, 0, 0.2, 1) 90ms both var(--viewtransitionfade-from),
+    0.5s cubic-bezier(.18,.88,.34,1) both var(--viewtransition-from);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-name: none !important;
+    animation-duration: 0s !important;
+  }
+}
+
+#navbar {
+  view-transition-name: disabled;
+}
+
+::view-transition-group(disabled),
+::view-transition-old(disabled),
+::view-transition-new(disabled) {
+  animation-duration: 0s !important;
+}
+
+@keyframes move-down {
+  0% {
+    transform: translateY(-150%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.uiuctf-logo-train-down {
+  animation: move-down 0.7s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uiuctf-logo-train-down {
+    animation: none;
+  }
+}
+
+.fade-in {
+  animation: fade-in 1s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: cubic-bezier(.18,.88,.34,1) fade-in-up 0.5s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up {
+    animation: none;
+  }
+}
+
+.modal-fade-in {
+  animation: fade-in ease-out 0.3s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-fade-in {
+    animation: none;
+  }
+}

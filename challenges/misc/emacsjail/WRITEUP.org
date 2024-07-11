@@ -1,0 +1,10 @@
+* Description
+Should I create a function whitelist or a blacklist? I want to start with a blacklist and then 
+
+Set buffer to scratch
+
+Insert text
+
+* Links
+[[https://nullprogram.com/blog/2013/01/22/][The Limits of Emacs Advice]]
+[[https://rocky.github.io/elisp-bytecode.pdf][Emacs Lisp Bytecode Reference]]

@@ -1,0 +1,2 @@
+/*
+  Content-Security-Policy: connect-src 'self' https://rctf.2024.uiuc.tf;

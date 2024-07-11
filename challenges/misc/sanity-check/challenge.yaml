@@ -1,0 +1,8 @@
+name: Sanity Check
+author: SIGPwny Transit Authority
+category: misc
+description: |-
+  Join the [Discord](https://discord.gg/4UY7YpbrBd)!
+value: 1
+type: dynamic
+flag: uiuctf{plz_n0_ch4tGPT}
