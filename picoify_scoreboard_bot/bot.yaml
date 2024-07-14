@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: picoify-scoreboard-discord-webhook
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: picoify-scoreboard-discord-webhook-role
+rules:
+  - apiGroups: ["*"]
+    resources:
+      - namespaces
+      - deployments
+      - pods
+    verbs:
+      - get
+      - list
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: picoify-scoreboard-discord-webhook-role-binding
+subjects:
+  - kind: ServiceAccount
+    name: picoify-scoreboard-discord-webhook
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: picoify-scoreboard-discord-webhook-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: picoify-scoreboard-discord-webhook
+  namespace: default
+  labels:
+    app: picoify-scoreboard-discord-webhook
+spec:
+  selector:
+    matchLabels:
+      app: picoify-scoreboard-discord-webhook
+  template:
+    metadata:
+      labels:
+        app: picoify-scoreboard-discord-webhook
+    spec:
+      containers:
+        - name: picoify-scoreboard-bot
+          image: us-central1-docker.pkg.dev/<GCP PROJECT ID>/status-bot/picoify-scoreboard-bot@sha256:092099cef6586e9951ca8ab113c1f449b740e2bf6111b92a15c25831f625e892
+          env:
+            - name: MESSAGE_ID
+              value: '1256685780269535335'
+          envFrom:
+            - secretRef:
+                name: picoify-scoreboard-discord-webhook-secrets
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+      serviceAccountName: picoify-scoreboard-discord-webhook

@@ -1,0 +1,6 @@
+.DS_Store/
+.terraform/
+# from nix build
+result
+
+__pycache__

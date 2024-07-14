@@ -1,0 +1,365 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+  namespace: rctf
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      containers:
+        - name: frontend
+          image: us-central1-docker.pkg.dev/<GCP PROJECT ID>/rctf/rctf:latest
+          imagePullPolicy: Always
+          # command: ['sleep', 'infinity']
+          env:
+            - name: PORT
+              value: "80"
+            - name: RCTF_INSTANCE_TYPE
+              value: frontend
+          envFrom:
+            - secretRef:
+                name: dbinfo
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 45
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: config
+              mountPath: /app/conf.d
+      volumes:
+        - name: config
+          projected:
+            sources:
+            - configMap:
+                name: rctf-config
+            - secret:
+                name: chal-uploads-sa
+                items:
+                  - key: uploads-yaml
+                    path: 05-chal-uploads.yml
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: node
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: frontend
+      serviceAccountName: rctf
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: leaderboard
+  name: leaderboard
+  namespace: rctf
+spec:
+  replicas: 1
+  serviceName: leaderboard
+  selector:
+    matchLabels:
+      app: leaderboard
+  template:
+    metadata:
+      labels:
+        app: leaderboard
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      containers:
+        - name: leaderboard
+          image: us-central1-docker.pkg.dev/<GCP PROJECT ID>/rctf/rctf:latest
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "80"
+            - name: RCTF_INSTANCE_TYPE
+              value: leaderboard
+          envFrom:
+            - secretRef:
+                name: dbinfo
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: config
+              mountPath: /app/conf.d
+      volumes:
+        - name: config
+          projected:
+            sources:
+            - configMap:
+                name: rctf-config
+            - secret:
+                name: chal-uploads-sa
+                items:
+                  - key: uploads-yaml
+                    path: 05-chal-uploads.yml
+
+      serviceAccountName: rctf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: rctf
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rctf-config
+  namespace: rctf
+data:
+  01-ui.yml: |
+    ctfName: UIUCTF 2024
+    meta:
+      description: 'Solve challenges. Deliver passengers.'
+    homeContent: |
+      # UIUCTF 2024
+      UIUCTF is an annual capture-the-flag competition hosted by [SIGPwny](https://sigpwny.com/), the cybersecurity club at the University of Illinois Urbana-Champaign (UIUC).
+
+      Join our [Discord server](https://discord.gg/PytGqjq) for updates!
+
+      <action-button href="/register">
+        <span>Register Now</span>
+        <svg viewBox="4 4 16 16"><path fill="#ffffff" d="M16.01 11H4v2h12.01v3L20 12l-3.99-4z"></path></svg>
+      </action-button>
+
+      <timer></timer>
+
+      ## Scenario
+      A massive outage is affecting the entire transit system!
+      The SIGPwny Transit Authority has issued an emergency call to CTF teams for help restore service.
+      Solve challenges to fix stations and deliver as many passengers as you can!
+
+      ## Rules
+      1. **Don't cheat.** Each person can only compete on one team. Sharing flags or solves between teams will lead to immediate disqualification.
+      2. **Don't attack the infrastructure.** This includes brute-force attacks and tools that can generate excessive amounts of traffic, such as nmap, dirbuster, etc. unless otherwise specified.
+      3. **No flag hoarding or flag dumping!** It's not cool. We require teams to submit flags as they find them.
+
+      _Also, don't do anything orange and below on the [CTF tactics iceberg](https://twitter.com/gf_256/status/1206393845497376768/)._
+
+      ## Sponsors
+      Thank you to our sponsors:
+      - [CrowdStrike](https://www.crowdstrike.com/)
+      - [Trail of Bits](https://www.trailofbits.com/)
+      - [Zellic](https://www.zellic.io/)
+      - [Battelle](https://www.battelle.org/)
+      - [REDLattice](https://redlattice.com/)
+      - [Google Cloud](https://goo.gle/ctfsponsorship)
+
+  02-ctf.yml: |
+    origin: https://rctf.2024.uiuc.tf
+    originFrontend: https://2024.uiuc.tf
+    divisions:
+      open: Open
+    defaultDivision: open
+    tokenKey: '<RCTF TOKEN>'
+    startTime: 1719619200000
+    endTime: 1719792000000
+    leaderboard:
+      maxLimit: 3000
+  03-db.yml: |
+    database:
+      sql:
+        host: postgres.rctf.svc.cluster.local
+        user: rctf
+        database: rctf
+      redis:
+        host: redis.rctf.svc.cluster.local
+      migrate: before
+    challengeProvider:
+      name: 'challenges/database'
+  04-email.yml: |
+    email:
+      from: no-reply@mail.uiuc.tf
+      provider:
+        name: 'emails/mailgun'
+        options:
+          apiKey: '<MAILGUN API KEY>'
+          domain: 'mail.uiuc.tf'
+    logoUrl: 'https://sigpwny.com/pwny8.svg'
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - endpoints
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  - apiGroups:
+      - traefik.io
+    resources:
+      - middlewares
+      - middlewaretcps
+      - ingressroutes
+      - traefikservices
+      - ingressroutetcps
+      - ingressrouteudps
+      - tlsoptions
+      - tlsstores
+      - serverstransports
+      - serverstransporttcps
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-account
+  namespace: traefik
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-role
+subjects:
+  - kind: ServiceAccount
+    name: traefik-account
+    namespace: traefik
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik
+  namespace: traefik
+  labels:
+    app: traefik
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-account
+      containers:
+        - name: traefik
+          image: traefik:v3.0
+          args:
+            - --accesslog
+            - --entrypoints.http.Address=:80
+            - --entrypoints.https.Address=:443
+            - --entryPoints.chal.address=:1337
+            - --entryPoints.ping.address=:8082
+            - --entrypoints.http.http.redirections.entrypoint.to=https
+            - --entrypoints.http.http.redirections.entrypoint.scheme=https
+            - --ping.entryPoint=ping
+            - --providers.kubernetescrd
+            - --log.level=DEBUG
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443
+            - name: chal
+              containerPort: 1337
+            - name: ping
+              containerPort: 8082
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8082
+            initialDelaySeconds: 45
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: node
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: traefik
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: default
+  namespace: default
+spec:
+  sniStrict: false
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: default
+spec:
+  defaultCertificate:
+    secretName: tls-cert-chal

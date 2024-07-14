@@ -1,0 +1,28 @@
+name: Testchal Simple
+author: Richard
+category: misc
+description: |-
+  This is a sample challenge. Do not interact.
+
+  `ncat --ssl testchal-simple.chal.uiuc.tf 1337`
+value: 1
+type: dynamic
+flag: uiuctf{test_flag_123}
+provide:
+  - ./challenge/chal.c
+
+containers:
+  main:
+    challenge:
+      build: ./challenge/
+      ports: [1337]
+    healthcheck:
+      build: ./healthcheck/
+
+expose:
+  main:
+  - target: 1337
+    tcp: testchal-simple.chal.uiuc.tf
+
+deployed: false
+visible: false

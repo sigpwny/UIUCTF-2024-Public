@@ -1,0 +1,7 @@
+Google image search / plane code tells us the aircraft type
+exiftool tells us the image is taken on 5/11.
+ADS-B Transponder Mode-S code for it is AE20C3
+By using adsb exchange https://globe.adsbexchange.com/?icao=ae20c3&lat=47.395&lon=-122.613&zoom=8.0&showTrace=2024-05-11
+We know it landed in Seatac on the day the image is taken.
+By reading the taxiway signs and airport chart https://www.faa.gov/air_traffic/flight_info/aeronav/acf/media/Presentations/14-02-RD286_SEA_Airport%20Diagram.pdf
+We know that there is taxiway E and B on the image, as well as sign for B and C. Looking at a chart, we can conclude that the aircraft is in Cargo Ramp.

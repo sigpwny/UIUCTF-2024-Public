@@ -1,0 +1,10 @@
+name: pwnypass 2
+author: arxenix
+category: web
+description: |-
+  This is the second flag for pwnypass.
+
+  `ncat --ssl pwnypass-bot.chal.uiuc.tf 1337`
+
+type: dynamic
+flag: uiuctf{i_th0ught_th1s_w4s_w3b_266f62249d48a085}

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    restart: always
+    environment:
+      - AUTH_TRUST_HOST=http://localhost:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+  backend:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./backend/flag.txt:/usr/share/nginx/html/flag.txt

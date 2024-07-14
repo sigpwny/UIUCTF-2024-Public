@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: rcds-key-in-a-haystack
+  name: main
+  labels:
+    app.kubernetes.io/managed-by: rcds
+    rcds.redpwn.net/challenge-id: key-in-a-haystack
+    rcds.redpwn.net/container-name: main
+    rcds.redpwn.net/visibility: public
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/managed-by: rcds
+      rcds.redpwn.net/challenge-id: key-in-a-haystack
+      rcds.redpwn.net/container-name: main
+      rcds.redpwn.net/visibility: public
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/managed-by: rcds
+        rcds.redpwn.net/challenge-id: key-in-a-haystack
+        rcds.redpwn.net/container-name: main
+        rcds.redpwn.net/visibility: public
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      containers:
+        - name: challenge
+          image: us.gcr.io/<GCP PROJECT ID>/key-in-a-haystack-challenge:7b68c981f5c0656da6fd112d2f144b9f92a77b931235b3088be5fbc336d65e77
+          ports:
+            - name: port-1337
+              containerPort: 1337
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 45281
+              scheme: HTTP
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 3
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 45281
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: pow
+              mountPath: /kctf/pow
+            - name: pow-bypass-pub
+              mountPath: /kctf/pow-bypass
+        - name: healthcheck
+          image: us.gcr.io/<GCP PROJECT ID>/key-in-a-haystack-healthcheck:186e9f695b41aa4a24dc2b92d2de3dda142b123177ed36b0119ace6de719a7cc
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: 50m
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+          volumeMounts:
+            - name: pow-bypass
+              mountPath: /pow-bypass
+      volumes:
+        - name: pow
+          configMap:
+            name: pow
+        - name: pow-bypass
+          secret:
+            secretName: pow-bypass
+        - name: pow-bypass-pub
+          secret:
+            secretName: pow-bypass-pub
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: rcds-key-in-a-haystack
+  name: pow
+data:
+  pow.conf: |
+    1337
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: rcds-key-in-a-haystack
+  name: pow-bypass
+type: Opaque
+stringData:
+  pow-bypass-key.pem: |
+    -----BEGIN EC PRIVATE KEY-----
+    MHcCAQEEIHaDvEPYvtpJh3a9fdi58npl4fPC8tmYo8mwKYsDi/ntoAoGCCqGSM49
+    AwEHoUQDQgAEeap/OwlpvX91i+dgaG469DEwX8mIHaSZojv/PboJqeQQ0nVLdWvS
+    j/moA+869+Z7911em31ljbemdIyadkzlKg==
+    -----END EC PRIVATE KEY-----
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: rcds-key-in-a-haystack
+  name: pow-bypass-pub
+type: Opaque
+stringData:
+  pow-bypass-key-pub.pem: |
+    -----BEGIN PUBLIC KEY-----
+    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeap/OwlpvX91i+dgaG469DEwX8mI
+    HaSZojv/PboJqeQQ0nVLdWvSj/moA+869+Z7911em31ljbemdIyadkzlKg==
+    -----END PUBLIC KEY-----

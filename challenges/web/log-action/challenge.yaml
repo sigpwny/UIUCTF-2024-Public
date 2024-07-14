@@ -1,0 +1,12 @@
+name: Log Action
+author: Minh
+category: web
+description: |-
+  I keep trying to log in, but it's not working :'(
+
+  [http://log-action.challenge.uiuc.tf/](http://log-action.challenge.uiuc.tf/)
+
+type: dynamic
+flag: uiuctf{close_enough_nextjs_server_actions_welcome_back_php}
+provide:
+  - ./challenge/log-action.zip

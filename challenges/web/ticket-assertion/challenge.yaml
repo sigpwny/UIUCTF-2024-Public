@@ -1,0 +1,28 @@
+name: Ticket Assertion
+author: spicypete
+category: web
+description: |-
+  Come ride the famed PWNY Express! Just make sure you have a ticket, or you'll be kicked off the train.
+
+  [https://ticket-assertion.chal.uiuc.tf/](https://ticket-assertion.chal.uiuc.tf/)
+
+type: dynamic
+flag: uiuctf{???}
+# provide:
+#   - ./challenge/TODO
+
+deployed: false
+visible: false
+
+# containers:
+#   main:
+#     challenge:
+#       build: ./challenge/
+#       ports: [1337]
+#     healthcheck:
+#       build: ./healthcheck/
+
+# expose:
+#   main:
+#   - target: 1337
+#     tcp: ticket-assertion.chal.uiuc.tf

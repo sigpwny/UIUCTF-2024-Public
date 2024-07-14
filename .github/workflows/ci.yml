@@ -1,0 +1,43 @@
+# Note to intrepid readers: Here be dragons.
+# This code has not been tested and you are probably better off consulting https://determinate.systems/posts/nix-github-actions/ or similar
+name: Build and test infra on push to main
+
+# to test, comment out on and run manually
+# on:
+#   push:
+#     branches: [master]
+#   issue_comment:
+#     types: [created, edited]  # if we comment '/deploy' on a pr
+
+on: workflow_dispatch
+
+jobs:
+  # run if event is a push (to main), or if if the comment is on a pull request and has '/deploy in it'
+  # use ${{ }} for evaluating expressions
+  # if: ${{github.event_name == 'push' || (github.event_name == 'issue_comment' && contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, '/deploy'))}}
+  
+  deploy:
+    name: 'google cloud auth, launch nix shell'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
+    steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          submodules: recursive
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: 'dotted-forest-314903'
+          workload_identity_provider: 'projects/648434879266/locations/global/workloadIdentityPools/github/providers/my-repo'
+      - uses: nixbuild/nix-quick-install-action@v28
+      - run: |
+          echo "nix develop"
+          ls
+          nix develop .
+          cd repos/chals/new_rctf
+
+
+    
+      

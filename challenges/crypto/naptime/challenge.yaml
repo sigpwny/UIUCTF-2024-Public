@@ -1,0 +1,11 @@
+name: Naptime
+author: Anakin
+category: crypto
+description: |-
+  I'm pretty tired. Don't leak my flag while I'm asleep.
+
+type: dynamic
+flag: uiuctf{i_g0t_sleepy_s0_I_13f7_th3_fl4g}
+provide:
+  - ./enc_dist.sage
+  - ./pub.txt

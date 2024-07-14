@@ -1,0 +1,25 @@
+name: Key in a Haystack
+author: Husnain
+category: crypto
+description: |-
+  I encrpyted the flag, but I lost my key in an annoyingly large haystack. Can you help me find it and decrypt the flag? 
+
+  `ncat --ssl key-in-a-haystack.chal.uiuc.tf 1337`
+
+type: dynamic
+flag: uiuctf{Finding_Key_Via_Small_Subgroups} 
+provide:
+  - ./challenge/chal.py
+
+containers:
+  main:
+    challenge:
+      build: challenge/
+      ports: [1337]
+    healthcheck:
+      build: healthcheck/
+
+expose:
+  main:
+  - target: 1337
+    tcp: key-in-a-haystack.chal.uiuc.tf

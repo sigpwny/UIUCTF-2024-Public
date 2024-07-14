@@ -1,0 +1,2 @@
+Goose.dmp filter=lfs diff=lfs merge=lfs -text
+evidence.pcapng filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,24 @@
+docker:
+  image:
+    prefix: "us-central1-docker.pkg.dev/<GCP PROJECT ID>/chal-artifact-registry/"
+defaults:
+  containers:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 100m
+        memory: 150Mi
+      requests:
+        cpu: 10m
+        memory: 30Mi
+backends:
+- resolve: rctf
+  options:
+    url: https://rctf.2024.uiuc.tf/
+    token: <RCTF ADMIN TOKEN>
+    scoring:
+      minPoints: 50
+      maxPoints: 500
+- resolve: k8s
+  options:
+    domain: chal.uiuc.tf
